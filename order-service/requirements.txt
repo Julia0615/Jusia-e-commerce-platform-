@@ -1,0 +1,11 @@
+# Save this as /Users/bahatizhuliduosi/Desktop/JuSia/order-service/requirements.txt
+# requirements.txt
+Flask==2.2.3
+Werkzeug==2.2.3  # Add explicit Werkzeug version
+Flask-SQLAlchemy==3.0.3
+PyJWT==2.6.0
+requests==2.28.2
+psycopg2-binary
+gunicorn
+pytz
+tenacity

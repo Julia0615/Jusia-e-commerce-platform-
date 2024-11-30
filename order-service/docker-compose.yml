@@ -1,0 +1,50 @@
+version: "3.8"
+
+services:
+  order-service:
+    build: .
+    container_name: order-service
+    ports:
+      - "5002:5002"
+    environment:
+      - FLASK_APP=run.py
+      - FLASK_DEBUG=0 # Updated for production
+      - DATABASE_URL=postgresql://postgres:postgres@order-service-postgres:5432/orders
+    depends_on:
+      order-service-postgres:
+        condition: service_healthy
+    networks:
+      - order-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:5002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - .:/app
+
+  order-service-postgres:
+    image: postgres:13
+    container_name: order-service-postgres
+    environment:
+      - POSTGRES_DB=orders
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - order-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+networks:
+  order-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
