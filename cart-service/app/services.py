@@ -9,7 +9,14 @@ import jwt
 
 class CartService:
     def __init__(self):
-        self.redis = None
+        # Initialize Redis connection from Flask's current_app context
+        self.redis = self._init_redis()
+
+    def _init_redis(self):
+        redis_url = current_app.config.get('REDIS_URL')
+        if redis_url:
+            return redis.from_url(redis_url)
+        return None
 
     def add_item(self, user_id: int, product_id: int, price: float, quantity: int = 1) -> Optional[CartItem]:
         if quantity <= 0:
