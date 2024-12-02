@@ -3,7 +3,7 @@ from functools import wraps
 from flask import request, jsonify
 import jwt
 from datetime import datetime, timedelta
-from app.models import User
+from .services import UserService
 
 def generate_token(user_id: int, secret_key: str) -> str:
     return jwt.encode(
@@ -25,12 +25,13 @@ def token_required(f):
         if not token:
             return jsonify({'error': 'Token is missing'}), 401
             
-        try:
-            data = jwt.decode(token, 'your-secret-key', algorithms=['HS256'])
-            current_user = User.query.get(data['user_id'])
-        except:
+        user_service = UserService()
+        user_id = user_service.validate_token(token)
+        
+        if not user_id:
             return jsonify({'error': 'Invalid token'}), 401
             
+        current_user = user_service.get_user_by_id(user_id)
         return f(current_user, *args, **kwargs)
     
     return decorated

@@ -1,35 +1,57 @@
+## cart-service
+# cart-service/docker-compose.yml
 version: "3.8"
 
 services:
   cart-service:
     build: .
+    container_name: cart-service
     ports:
       - "5003:5003"
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/carts
-      - REDIS_URL=redis://redis:6379/0
+      - FLASK_APP=run.py
+      - FLASK_DEBUG=1
+      - DATABASE_URL=postgresql://postgres:postgres@cart-db:5432/carts
+      - REDIS_URL=redis://cart-cache:6379/0
+      - JWT_SECRET_KEY=e1a00e39bd827b47334cff98872e82ac4568ea673115f88b04769f89714d6a1a
     depends_on:
-      - postgres
-      - redis
+      cart-db:
+        condition: service_healthy
+      cart-cache:
+        condition: service_started
+    networks:
+      - cart-network
 
-  postgres:
+  cart-db:
     image: postgres:13
+    container_name: cart-db
     environment:
       - POSTGRES_DB=carts
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     ports:
-      - "5432:5432"
+      - "5435:5432" # Changed from 5434
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cart-network
 
-  redis:
+  cart-cache:
     image: redis:6
+    container_name: cart-cache
     ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
+      - "6381:6379" # Changed from 6380
+    networks:
+      - cart-network
+
+networks:
+  cart-network:
+    driver: bridge
 
 volumes:
   postgres_data:
-  redis_data:

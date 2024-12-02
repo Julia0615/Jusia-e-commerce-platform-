@@ -1,4 +1,4 @@
-#user-service _init_py
+#user-service_init_py
 from flask import Flask
 from app.models import db
 from app.routes import users_bp

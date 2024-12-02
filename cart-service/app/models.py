@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime, UTC
+from datetime import datetime
+import pytz
 from decimal import Decimal
 
 db = SQLAlchemy()
@@ -13,8 +14,8 @@ class CartItem(db.Model):
     product_id = db.Column(db.Integer, nullable=False)
     quantity = db.Column(db.Integer, nullable=False, default=1)
     price = db.Column(db.Numeric(10, 2), nullable=False)
-    created_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC))
-    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(UTC), onupdate=lambda: datetime.now(UTC))
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(pytz.UTC))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(pytz.UTC), onupdate=lambda: datetime.now(pytz.UTC))
 
     @property
     def subtotal(self) -> Decimal:
