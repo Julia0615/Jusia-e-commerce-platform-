@@ -30,7 +30,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     ports:
-      - "5435:5432" # Changed from 5434
+      - "5435:5432"  # Changed from 5434
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -45,7 +45,7 @@ services:
     image: redis:6
     container_name: cart-cache
     ports:
-      - "6381:6379" # Changed from 6380
+      - "6381:6379"  # Changed from 6380
     networks:
       - cart-network
 

@@ -1,9 +1,8 @@
-from flask_sqlalchemy import SQLAlchemy
+#models.py
+from app import db
 from datetime import datetime
 import pytz
 from decimal import Decimal
-
-db = SQLAlchemy()
 
 class CartItem(db.Model):
     __tablename__ = 'cart_items'
